@@ -67,6 +67,8 @@ export default function MapScreen(props) {
         if (cars) {
             resetCars();
         }
+        return function cleanup() {
+        }
     },[cars]);
 
     useEffect(() => {
@@ -76,6 +78,8 @@ export default function MapScreen(props) {
         if (tripdata.pickup && !drivers) {
             resetCars();
             setFreeCars([]);
+        }
+        return function cleanup() {
         }
     }, [drivers, tripdata.pickup]);
 
@@ -87,6 +91,8 @@ export default function MapScreen(props) {
         if(estimatedata.error && estimatedata.error.flag){
             Alert.alert(estimatedata.error.msg);
             dispatch(clearEstimate());
+        }
+        return function cleanup() {
         }
     },[estimatedata.estimate,estimatedata.error, estimatedata.error.flag]);
  
@@ -107,6 +113,8 @@ export default function MapScreen(props) {
                 longitudeDelta: longitudeDelta
             });
         }
+        return function cleanup() {
+        }
     },[tripdata.selected,tripdata.pickup,tripdata.drop]);
 
 
@@ -117,6 +125,8 @@ export default function MapScreen(props) {
                 dispatch(fetchDrivers());
             }
         }, 30000);
+        return function cleanup() {
+        }
     },[])
 
     useEffect(() => {  
@@ -131,6 +141,8 @@ export default function MapScreen(props) {
                 latitude: gps.location.lat,
                 longitude: gps.location.lng
             },tripdata.pickup?'geolocation':'init');
+        }
+        return function cleanup() {
         }
     }, [gps.location]);
 
@@ -356,49 +368,61 @@ export default function MapScreen(props) {
 
     //Go to confirm booking page
     const onPressBook = () => {
-        if (tripdata.pickup && tripdata.drop && tripdata.drop.add) {
-            if (!tripdata.carType) {
-                Alert.alert(language.alert, language.car_type_blank_error)
-            } else {
-                let driver_available = false;
-                for (let i = 0; i < allCarTypes.length; i++) {
-                    let car = allCarTypes[i];
-                    if (car.name == tripdata.carType.name && car.minTime) {
-                        driver_available = true;
-                        break;
+        // console.log("trip",tripdata)
+        if(activeBookings && activeBookings.length>=1){
+            Alert.alert(language.alert, `You currently have active riding.
+            You must pay for it and complete activeriding before you can book another riding`);
+        }else{
+            if (tripdata.pickup && tripdata.drop && tripdata.drop.add) {
+                if (!tripdata.carType) {
+                    Alert.alert(language.alert, language.car_type_blank_error)
+                } else {
+                    let driver_available = false;
+                    for (let i = 0; i < allCarTypes.length; i++) {
+                        let car = allCarTypes[i];
+                        if (car.name == tripdata.carType.name && car.minTime) {
+                            driver_available = true;
+                            break;
+                        }
+                    }
+                    // console.log("driver_available",driver_available)
+                    if (driver_available) {
+                        dispatch(getEstimate({
+                            bookLater: false,
+                            bookingDate: null,
+                            pickup: {coords: {lat:tripdata.pickup.lat, lng:tripdata.pickup.lng} , description: tripdata.pickup.add},
+                            drop:  {coords: {lat:tripdata.drop.lat, lng:tripdata.drop.lng}, description: tripdata.drop.add},
+                            carDetails: tripdata.carType,
+                        }));
+                    } else {
+                        Alert.alert(language.alert, language.no_driver_found_alert_messege);
                     }
                 }
-                if (driver_available) {
-                    dispatch(getEstimate({
-                        bookLater: false,
-                        bookingDate: null,
-                        pickup: {coords: {lat:tripdata.pickup.lat, lng:tripdata.pickup.lng} , description: tripdata.pickup.add},
-                        drop:  {coords: {lat:tripdata.drop.lat, lng:tripdata.drop.lng}, description: tripdata.drop.add},
-                        carDetails: tripdata.carType,
-                    }));
-                } else {
-                    Alert.alert(language.alert, language.no_driver_found_alert_messege);
-                }
+            } else {
+                Alert.alert(language.alert, language.drop_location_blank_error);
             }
-        } else {
-            Alert.alert(language.alert, language.drop_location_blank_error);
         }
     }
 
 
     const onPressBookLater = () => {
-        if (tripdata.pickup && tripdata.drop && tripdata.drop.add) {
-            if (tripdata.carType) {
-                setPickerConfig({
-                    dateMode: 'date', 
-                    dateModalOpen: true,
-                    selectedDateTime: pickerConfig.selectedDateTime
-                });
+        if(activeBookings && activeBookings.length>=1){
+            Alert.alert(language.alert, `You currently have active riding.
+            You must pay for it and complete activeriding before you can book another riding`);
+        }else{
+            if (tripdata.pickup && tripdata.drop && tripdata.drop.add) {
+                if (tripdata.carType) {
+                    setPickerConfig({
+                        dateMode: 'date', 
+                        dateModalOpen: true,
+                        selectedDateTime: pickerConfig.selectedDateTime
+                    });
+                } else {
+                    Alert.alert(language.alert, language.car_type_blank_error)
+                }
             } else {
-                Alert.alert(language.alert, language.car_type_blank_error)
+                Alert.alert(language.alert, language.drop_location_blank_error)
             }
-        } else {
-            Alert.alert(language.alert, language.drop_location_blank_error)
         }
     }
 

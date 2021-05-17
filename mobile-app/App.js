@@ -43,10 +43,11 @@ export default function App() {
   const _loadResourcesAsync = async () => {
     return Promise.all([
       Asset.loadAsync([
-        require('./assets/images/background.jpg'),
-        require('./assets/images/logo165x90white.png'),
-        require('./assets/images/bg.jpg'),
-        require('./assets/images/intro.jpg'),
+        // require('./assets/images/background.jpg'),
+        require('./assets/images/logo165x90.png'),
+        // require('./assets/images/bg.jpg'),
+        // require('./assets/images/bg.png'),
+        // require('./assets/images/start.png'),
       ]),
       Font.loadAsync({
         'Roboto-Bold': require('./assets/fonts/Roboto-Bold.ttf'),
@@ -68,7 +69,7 @@ export default function App() {
         setUpdateMsg(language.checking_updates);
         const update = await Updates.checkForUpdateAsync();
         if (update.isAvailable) {
-          setUpdateMsg(language.downloading_updates);
+          setUpdate(language.downloading_updates);
           await Updates.fetchUpdateAsync();
           await Updates.reloadAsync();
         } else {
@@ -96,7 +97,7 @@ export default function App() {
       :
       <View style={styles.container}>
         <ImageBackground
-          source={require('./assets/images/intro.jpg')}
+          source={require('./assets/images/flag.png')}
           resizeMode="stretch"
           style={styles.imagebg}
         >

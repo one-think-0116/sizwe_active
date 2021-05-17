@@ -116,7 +116,7 @@ export default function IntroScreen(props) {
 
     return (
         <ImageBackground
-            source={require('../../assets/images/bg.jpg')}
+            source={require('../../assets/images/start.png')}
             resizeMode="stretch"
             style={styles.imagebg}
         >
@@ -196,6 +196,7 @@ const styles = StyleSheet.create({
         marginLeft: 35,
         marginRight: 35,
         backgroundColor: colors.GREY.iconSecondary,
+        // borderRadius:20
     },
     materialButtonDark2: {
         height: 40,
@@ -203,6 +204,7 @@ const styles = StyleSheet.create({
         marginLeft: 35,
         marginRight: 35,
         backgroundColor: colors.GREY.iconSecondary,
+        // borderRadius:20
     },
     actionLine: {
         height: 20,

@@ -3,8 +3,8 @@ export const MainConfig = {
         app_name: "Active Rides", 
         app_description: "This is the Nigeria taxi company App",
         app_identifier: "com.activerides.taxi.company.app",
-        ios_app_version: "1.0.0", 
-        android_app_version: 100
+        ios_app_version: "1.0.2", 
+        android_app_version: 102
     },
     FirebaseConfig: {
         apiKey: "AIzaSyBT8nUw4TYGizsmvQPoO_3jvFVdyZx7w3E",

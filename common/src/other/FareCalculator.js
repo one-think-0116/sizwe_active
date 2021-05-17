@@ -10,7 +10,8 @@ export function FareCalculator(distance,time,rateDetails){
     }else{
         convenienceFee = (total*parseFloat(rateDetails.convenience_fees)/100);
     }
-    let grand = total + convenienceFee;
+    // let grand = total + convenienceFee;
+    let grand = total;
         
     return {
         totalCost:parseFloat(total.toFixed(2)),

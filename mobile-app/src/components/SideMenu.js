@@ -215,7 +215,7 @@ export default function SideMenu(props){
             </View>
             <View>
                 <Image
-                    source={require("../../assets/images/logo165x90white.png")}
+                    source={require("../../assets/images/logo165x90.png")}
                     style={{ width: '100%' }}
                 />
             </View>

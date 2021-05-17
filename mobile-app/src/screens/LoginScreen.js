@@ -193,7 +193,7 @@ export default function EmailLoginScreen(props) {
     return (
         <KeyboardAvoidingView behavior={"position"} style={styles.container}>
             <ImageBackground
-                source={require('../../assets/images/bg.jpg')}
+                source={require('../../assets/images/login.png')}
                 resizeMode="stretch"
                 style={styles.imagebg}
             >
@@ -388,7 +388,8 @@ const styles = StyleSheet.create({
         marginRight: 35,
         borderWidth: 1,
         borderColor: colors.GREY.border,
-        justifyContent: 'center'
+        justifyContent: 'center',
+        // borderRadius: 20
     },
     box2: {
         height: 35,
@@ -398,7 +399,8 @@ const styles = StyleSheet.create({
         marginRight: 35,
         borderWidth: 1,
         borderColor: colors.GREY.border,
-        justifyContent: 'center'
+        justifyContent: 'center',
+        // borderRadius: 20
     },
 
     textInput: {
@@ -407,7 +409,8 @@ const styles = StyleSheet.create({
         fontFamily: "Roboto-Regular",
         textAlign: "left",
         marginTop: 8,
-        marginLeft: 5
+        marginLeft: 5,
+        
     },
     materialButtonDark: {
         height: 35,
@@ -415,6 +418,7 @@ const styles = StyleSheet.create({
         marginLeft: 35,
         marginRight: 35,
         backgroundColor: colors.GREY.iconSecondary,
+        // borderRadius:20
     },
     linkBar: {
         flexDirection: "row",
