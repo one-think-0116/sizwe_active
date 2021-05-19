@@ -42,13 +42,13 @@ export default function App() {
 
   const _loadResourcesAsync = async () => {
     return Promise.all([
-      Asset.loadAsync([
-        // require('./assets/images/background.jpg'),
-        require('./assets/images/logo165x90.png'),
-        // require('./assets/images/bg.jpg'),
-        // require('./assets/images/bg.png'),
-        // require('./assets/images/start.png'),
-      ]),
+      // Asset.loadAsync([
+      //   // require('./assets/images/background.jpg'),
+      //   // require('./assets/images/logo165x90.png'),
+      //   // require('./assets/images/bg.jpg'),
+      //   // require('./assets/images/login.png'),
+      //   // require('./assets/images/start.png'),
+      // ]),
       Font.loadAsync({
         'Roboto-Bold': require('./assets/fonts/Roboto-Bold.ttf'),
         'Roboto-Regular': require('./assets/fonts/Roboto-Regular.ttf'),
@@ -67,17 +67,17 @@ export default function App() {
     } else {
       try {
         setUpdateMsg(language.checking_updates);
-        const update = await Updates.checkForUpdateAsync();
-        if (update.isAvailable) {
-          setUpdate(language.downloading_updates);
-          await Updates.fetchUpdateAsync();
-          await Updates.reloadAsync();
-        } else {
+        // const update = await Updates.checkForUpdateAsync();
+        // if (update.isAvailable) {
+        //   setUpdate(language.downloading_updates);
+        //   await Updates.fetchUpdateAsync();
+        //   await Updates.reloadAsync();
+        // } else {
           setUpdateMsg(language.loading_assets);
           _loadResourcesAsync().then(() => {
             setAssetsLoaded(true);
           });
-        }
+        // }
       } catch (e) {
         console.log(e);
       }
