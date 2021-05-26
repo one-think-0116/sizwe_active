@@ -11,7 +11,7 @@
       "notification": {
         "icon": "./assets/images/logo96x96.png"
       },
-      "version": "1.0.7",
+      "version": "1.0.8",
       "orientation": "portrait",
       "icon": "./assets/images/logo1024x1024.png",
       "splash": {
@@ -53,7 +53,7 @@
       },
       "android": {
         "package": "com.activerides.taxi.company.app",
-        "versionCode": 107,
+        "versionCode": 108,
         "permissions": [
           "CAMERA",
           "READ_EXTERNAL_STORAGE",
