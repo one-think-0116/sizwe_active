@@ -49,7 +49,7 @@
           "googleMapsApiKey": "AIzaSyBT8nUw4TYGizsmvQPoO_3jvFVdyZx7w3E"
         },
         "googleServicesFile": "./GoogleService-Info.plist",
-        "buildNumber": "2"
+        "buildNumber": "3"
       },
       "android": {
         "package": "com.activerides.taxi.company.app",
