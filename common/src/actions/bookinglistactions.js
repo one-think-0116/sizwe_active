@@ -14,7 +14,6 @@ import { fetchAddressfromCoords } from '../other/GoogleAPIFunctions';
 import { language, dateStyle } from 'config';
 
 export const fetchBookings = (uid, role) => (dispatch) => (firebase) => {
-
   const {
     bookingListRef,
   } = firebase;
@@ -185,8 +184,11 @@ export const updateBooking = (booking) => (dispatch) => (firebase) => {
         booking.trip_cost = fare.grandTotal;
         booking.trip_end_time = end_time.toLocaleTimeString(dateStyle);
         booking.distance = parseFloat(distance).toFixed(2);
+        booking.driver_share = fare.totalCost - fare.convenience_fees;
         booking.convenience_fees = fare.convenience_fees;
-        booking.driver_share = fare.grandTotal - fare.convenience_fees;
+        booking.active_rides_fees = fare.active_rides_fees;
+        booking.fleet_manager_fees = fare.fleet_manager_fees;
+        booking.insurance_road_fees = fare.insurance_road_fees;
         booking.endTime = end_time.getTime();
         booking.total_trip_time = totalTimeTaken;
         booking.coords = res.coords;

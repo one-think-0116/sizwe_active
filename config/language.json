@@ -498,9 +498,15 @@
     "wrong_code": "Purchase code in not correct",
     "convert_to_mile": "Convert to Mile",
     "base_fare": "Base Fare",
-    "convenience_fee_type": "Convenience Fee Type",
+    "convenience_fee_type": "Fee Type",
     "percentage": "Percentage",
     "flat": "Flat",
     "ditanceTime": "Distance and Time",
-    "updatemobile" : "Please update you mobile number in profile"
+    "updatemobile" : "Please update you mobile number in profile",
+    "active_fees" : "Active Rides Fees(We can enter percentage)",
+    "fleet_manager_fees" : "Fleet Manager Fees(We can enter percentage)",
+    "insurance_road_fees" : "Insurance & Road tax(Be able to exter fixed amount)",
+    "active_rides_fees_comment" : "Active Rides Fees",
+    "fleet_manager_fees_comment" : "Fleet Manager Fees",
+    "insurance_roads_fees_comment" : "Insurance & Road tax Fees"
 }

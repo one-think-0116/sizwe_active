@@ -10,12 +10,29 @@ export function FareCalculator(distance,time,rateDetails){
     }else{
         convenienceFee = (total*parseFloat(rateDetails.convenience_fees)/100);
     }
-    // let grand = total + convenienceFee;
-    let grand = total;
+    let activeRidesFee = 0;
+    if(rateDetails.convenience_fee_type && rateDetails.convenience_fee_type == 'flat'){
+        activeRidesFee = rateDetails.active_rides_fees;
+    }else{
+        activeRidesFee = (total*parseFloat(rateDetails.active_rides_fees)/100);
+    }
+    let fleetManagerFee = 0;
+    if(rateDetails.convenience_fee_type && rateDetails.convenience_fee_type == 'flat'){
+        fleetManagerFee = rateDetails.fleet_manager_fees;
+    }else{
+        fleetManagerFee = (total*parseFloat(rateDetails.fleet_manager_fees)/100);
+    }
+    let insuranceFee = 0;
+        insuranceFee = rateDetails.insurance_road_fees;
+    let grand = total + insuranceFee;
+    // let grand = total;
         
     return {
         totalCost:parseFloat(total.toFixed(2)),
         grandTotal:parseFloat(grand.toFixed(2)),
-        convenience_fees:parseFloat(convenienceFee.toFixed(2))
+        convenience_fees:parseFloat(convenienceFee.toFixed(2)),
+        active_rides_fees:parseFloat(activeRidesFee.toFixed(2)),
+        fleet_manager_fees:parseFloat(fleetManagerFee.toFixed(2)),
+        insurance_road_fees:parseFloat(insuranceFee.toFixed(2)),
     }
 }

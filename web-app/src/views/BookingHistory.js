@@ -22,7 +22,7 @@ const BookingHistory = () => {
   const columns =  [
       { title: language.booking_id, field: 'id' },
       { title: language.booking_date, field: 'tripdate', render: rowData => rowData.tripdate?new Date(rowData.tripdate).toLocaleString(dateStyle):null},
-      { title: language.car_type, field: 'carType' },
+      { title: language.car_type, field: 'carType'},
       { title: language.customer_name,field: 'customer_name'},
       { title: language.pickup_address, field: 'pickupAddress' },
       { title: language.drop_address, field: 'dropAddress' },
@@ -38,6 +38,9 @@ const BookingHistory = () => {
       { title: language.vehicle_no, field: 'vehicle_number' },  
       { title: language.trip_cost_driver_share, field: 'driver_share'},
       { title: language.convenience_fee, field: 'convenience_fees'},
+      { title: language.active_rides_fees_comment, field: 'active_rides_fees'},
+      { title: language.fleet_manager_fees_comment, field: 'fleet_manager_fees'},
+      { title: language.insurance_roads_fees_comment, field: 'insurance_road_fees'},
       { title: language.discount_ammount, field: 'discount'},      
       { title: language.Customer_paid, field: 'customer_paid'},
       { title: language.payment_mode, field: 'payment_mode'},
@@ -53,8 +56,10 @@ const BookingHistory = () => {
 
   useEffect(()=>{
         if(bookinglistdata.bookings){
+          // console.log("bookinglistdata1",bookinglistdata)
             setData(bookinglistdata.bookings);
         }else{
+          // console.log("bookinglistdata2",bookinglistdata)
           setData([]);
         }
   },[bookinglistdata.bookings]);
@@ -89,6 +94,7 @@ const BookingHistory = () => {
         rowData => ({
           icon: 'cancel',
           tooltip: language.cancel_booking,
+          hidden: role === "admin"? false:true,
           disabled: rowData.status==='NEW' || rowData.status==='ACCEPTED'? false:true,
           onClick: (event, rowData) => {
             if(features.AllowCriticalEditsAdmin && (role==='rider' || role ==='admin')){

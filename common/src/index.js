@@ -169,7 +169,8 @@ const FirebaseProvider  = ({ children }) => {
                         app.database().ref('bookings').orderByChild('driver').equalTo(uid)
                         :
                         (role == 'fleetadmin'? 
-                            app.database().ref('bookings').orderByChild('fleetadmin').equalTo(uid)
+                            // app.database().ref('bookings').orderByChild('fleetadmin').equalTo(uid)
+                            app.database().ref('bookings')
                             : app.database().ref('bookings')
                         )
                     ),
