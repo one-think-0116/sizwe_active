@@ -73,7 +73,9 @@ export default function IntroScreen(props) {
         const csrf = Math.random().toString(36).substring(2, 15);
         const nonce = Math.random().toString(36).substring(2, 10);
         const hashedNonce = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, nonce);
+        
         try {
+            console.log("start")
             const applelogincredentials = await AppleAuthentication.signInAsync({
                 requestedScopes: [
                     AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
@@ -82,7 +84,8 @@ export default function IntroScreen(props) {
                 state: csrf,
                 nonce: hashedNonce
             });
-
+            console.log("end")
+            // console.log("applelogincredentials")
             pageActive.current = true;
             dispatch(appleSignIn({
                 idToken: applelogincredentials.identityToken,
