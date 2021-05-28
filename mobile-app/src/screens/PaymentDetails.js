@@ -42,12 +42,12 @@ export default function PaymentDetails(props) {
     active_rides_fees : booking.active_rides_fees,
     fleet_manager_fees : booking.fleet_manager_fees,
     insurance_road_fees : booking.insurance_road_fees,
-    amount: booking.trip_cost,
+    amount: booking.trip_cost + booking.insurance_road_fees,
     discount: 0,
     usedWalletMoney: 0,
     promo_applied: false,
     promo_details: null,
-    payableAmmount: booking.trip_cost,
+    payableAmmount: booking.trip_cost + booking.insurance_road_fees,
   });
 
   const useWallet = () => {
@@ -325,12 +325,6 @@ export default function PaymentDetails(props) {
             }}>
             </View>
             : null}
-          {/* {userdata && userdata.usertype == 'driver' ?
-            <View style={{ flex: 1, justifyContent: 'center', padding: 25 }}>
-              <Text style={{ color: 'green', textAlign: 'center', lineHeight: 60, fontSize: 60, fontWeight: 'bold' }}>{settings.symbol} {parseFloat(payDetails.amount).toFixed(2)}</Text>
-            </View>
-            : null
-          } */}
           {userdata && userdata.usertype == 'driver' ?
             <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', paddingLeft: 25, paddingRight: 25 }}>
               <Text style={{ color: 'green', textAlign: 'left', lineHeight: 45, fontSize: 20 ,fontWeight: 'bold' }}>{language.trip_cost_driver_share}</Text>

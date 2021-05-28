@@ -368,7 +368,6 @@ export default function MapScreen(props) {
 
     //Go to confirm booking page
     const onPressBook = () => {
-        // console.log("trip",tripdata)
         if(activeBookings && activeBookings.length>=1){
             Alert.alert(language.alert, `You currently have active riding.
             You must pay for it and complete activeriding before you can book another riding`);
@@ -385,7 +384,6 @@ export default function MapScreen(props) {
                             break;
                         }
                     }
-                    // console.log("driver_available",driver_available)
                     if (driver_available) {
                         dispatch(getEstimate({
                             bookLater: false,
