@@ -42,12 +42,12 @@ export default function PaymentDetails(props) {
     active_rides_fees : booking.active_rides_fees,
     fleet_manager_fees : booking.fleet_manager_fees,
     insurance_road_fees : booking.insurance_road_fees,
-    amount: booking.trip_cost + booking.insurance_road_fees,
+    amount: booking.trip_cost,
     discount: 0,
     usedWalletMoney: 0,
     promo_applied: false,
     promo_details: null,
-    payableAmmount: booking.trip_cost + booking.insurance_road_fees,
+    payableAmmount: booking.trip_cost,
   });
 
   const useWallet = () => {
