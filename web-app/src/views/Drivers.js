@@ -10,7 +10,7 @@ import {
 import { FirebaseContext } from 'common';
 
 export default function Users() {
-  const { api } = useContext(FirebaseContext);
+  const { api,usersRef } = useContext(FirebaseContext);
   const {
     addUser,
     editUser, 
@@ -19,22 +19,19 @@ export default function Users() {
   } = api;
   const [data, setData] = useState([]);
   const [cars, setCars] = useState({});
-  const usersdata = useSelector(state => state.usersdata);
+  const usersdata = useSelector(state => state.usersdataExcept);
   const cartypes = useSelector(state => state.cartypes);
   const auth = useSelector(state => state.auth);
   const dispatch = useDispatch();
-
   useEffect(()=>{
     if(usersdata.users){
-      // console.log("usersdata yeah")
         // setData(usersdata.users.filter(user => user.usertype ==='driver' && ((user.fleetadmin === auth.info.uid && auth.info.profile.usertype === 'fleetadmin')|| auth.info.profile.usertype === 'admin')));
         setData(usersdata.users.filter(user => user.usertype ==='driver' && ((auth.info.profile.usertype === 'fleetadmin')|| auth.info.profile.usertype === 'admin')));
     }else{
-      // console.log("usersdata no")
       setData([]);
     }
   },[usersdata.users,auth.info.profile.usertype,auth.info.uid]);
-
+// console.log("usersdata",usersdata)
   useEffect(()=>{
     if(cartypes.cars){
         let obj =  {};
@@ -42,7 +39,6 @@ export default function Users() {
         setCars(obj);
     }
   },[cartypes.cars]);
-
   const columns = [
       { title: language.createdAt, field: 'createdAt', editable:'never', defaultSort:'desc',render: rowData => rowData.createdAt?new Date(rowData.createdAt).toLocaleString(dateStyle):null},
       { title: language.first_name, field: 'firstName', initialEditValue: '' },

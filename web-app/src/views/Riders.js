@@ -8,7 +8,6 @@ import {
   language
 } from 'config';
 import { FirebaseContext } from 'common';
-
 export default function Users() {
   const { api } = useContext(FirebaseContext);
   const {
@@ -18,12 +17,13 @@ export default function Users() {
     checkUserExists
   } = api;
   const [data, setData] = useState([]);
-  const usersdata = useSelector(state => state.usersdata);
+  const usersdata = useSelector(state =>state.usersdataExcept);
+  const auth = useSelector(state => state.auth);
   const dispatch = useDispatch();
-
   useEffect(()=>{
     if(usersdata.users){
-      setData(usersdata.users.filter(user => user.usertype ==='rider'));
+        // setData(usersdata.users.filter(user => user.usertype ==='rider' && user.pushToken === "ExponentPushToken[RTaBsyDLYNgxAlIv3DzhgN]"));
+        setData(usersdata.users.filter(user => user.usertype ==='rider'));
     }else{
       setData([]);
     }
