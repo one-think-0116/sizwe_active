@@ -18,7 +18,7 @@ export default function Users() {
   } = api;
   const [data, setData] = useState([]);
   const usersdata = useSelector(state =>state.usersdataExcept);
-  const auth = useSelector(state => state.auth);
+  // const auth = useSelector(state => state.auth);
   const dispatch = useDispatch();
   useEffect(()=>{
     if(usersdata.users){
@@ -33,8 +33,8 @@ export default function Users() {
     { title: language.createdAt, field: 'createdAt', editable:'never', defaultSort:'desc',render: rowData => rowData.createdAt?new Date(rowData.createdAt).toLocaleString(dateStyle):null},
     { title: language.first_name, field: 'firstName'},
     { title: language.last_name, field: 'lastName'},
-    { title: language.email, field: 'email', editable:'onAdd'},
-    { title: language.mobile, field: 'mobile', editable:'onAdd'},
+    { title: language.email, field: 'email'},
+    { title: language.mobile, field: 'mobile'},
     { title: language.profile_image,  field: 'profile_image', render: rowData => rowData.profile_image?<img alt='Profile' src={rowData.profile_image} style={{width: 50,borderRadius:'50%'}}/>:null, editable:'never'},
     { title: language.account_approve,  field: 'approved', type:'boolean'},
     { title: language.wallet_balance,  field: 'walletBalance', type:'numeric' , editable:'never', initialEditValue: 0},

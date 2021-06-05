@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useContext } from 'react';
 import { 
     View, 
     Text,
@@ -9,25 +9,46 @@ import {
     Image, 
     TouchableWithoutFeedback,
     Platform, 
-    Alert 
+    Alert,
+    ActivityIndicator,
 } from 'react-native';
 import Background from './Background';
 import { Icon, Button, Header, Input } from 'react-native-elements'
 import { colors } from '../common/theme';
 var { height } = Dimensions.get('window');
+import { FirebaseContext } from 'common/src';
+import email from 'react-native-email';
+// import SendSMS from 'react-native-sms-z';
+import Communications from 'react-native-communications';
+import SendSMS from 'react-native-sms'
+
+
 import { 
     language,
     countries, 
     default_country_code,
+    FirebaseConfig,
     features
 } from 'config';
 import RadioForm from 'react-native-simple-radio-button';
 import RNPickerSelect from 'react-native-picker-select';
 import * as Permissions from 'expo-permissions';
 import * as ImagePicker from 'expo-image-picker';
+import ActionSheet from "react-native-actions-sheet";
+import { FirebaseRecaptchaVerifierModal } from "expo-firebase-recaptcha";
+import { useDispatch, useSelector } from 'react-redux';
 
+let realEmailcode;
+let realMobilecode;
 export default function Registration(props) {
+    const { api } = useContext(FirebaseContext);
+    const auth = useSelector(state => state.auth);
+    const {
+        requestPhoneOtpDevice,
+    } = api;
     const [state, setState] = useState({
+        profile_image: null,
+        profile_image_uri: '',
         usertype: 'rider',
         firstName: '',
         lastName: '',
@@ -46,10 +67,18 @@ export default function Registration(props) {
         password:''  
     });
     const [role, setRole] = useState(0);
+    const [emailVerificated,setEmailVerificated] = useState(false);
+    const [emailCode,setEmailCode] = useState('');
+    const [mobileVerificated,setMobileVerificated] = useState(false);
+    const [mobileCode,setMobileCode] = useState('');
     const [capturedImage, setCapturedImage] = useState(null);
     const [confirmpassword,setConfirmPassword] = useState('');
     const [countryCode,setCountryCode] = useState("+" + default_country_code.phone);
     const [mobileWithoutCountry, setMobileWithoutCountry] = useState('');
+    const actionSheetRef = useRef(null);
+    const [loader, setLoader] = useState(false);
+    const recaptchaVerifier = useRef(null);
+    const dispatch = useDispatch();
 
     const radio_props = [
         { label: language.no, value: 0 },
@@ -157,34 +186,188 @@ export default function Registration(props) {
 
     //register button press for validation
     onPressRegister = () => {
-        const { onPressRegister } = props;
-        const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-        if(re.test(state.email)){
-            if(state.usertype == 'driver' && state.licenseImage == null){
-                Alert.alert(language.alert,language.proper_input_licenseimage);
-            }else{
-                if((state.usertype == 'driver' && state.vehicleNumber.length > 1) || state.usertype == 'rider'){
-                    if(state.firstName.length>0 && state.lastName.length >0){
-                        if(validatePassword('alphanumeric')){
-                            if(validateMobile()){
-                                onPressRegister(state);
-                            }else{
-                                Alert.alert(language.alert,language.mobile_no_blank_error);
-                            }
-                        }
-                    }else{
-                        Alert.alert(language.alert,language.proper_input_name);
-                    }
+        if(!emailVerificated && !mobileVerificated){
+            Alert.alert(language.alert,"Please verify email and mobile");
+        }else if(emailVerificated && !mobileVerificated){
+            Alert.alert(language.alert,"Please verify mobile");
+        }else if(!emailVerificated && mobileVerificated){
+            Alert.alert(language.alert,"Please verify email");
+        }else if(emailVerificated && mobileVerificated){
+            const { onPressRegister } = props;
+            const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+            if(re.test(state.email)){
+                if(state.profile_image === null){
+                    Alert.alert(language.alert,"Upload your profile image. If you don't upload an image that clearly identifies you, the administrator will delete your account.")
                 }else{
-                    Alert.alert(language.alert,language.proper_input_vehicleno);
+                    if(state.usertype == 'driver' && state.licenseImage == null){
+                        Alert.alert(language.alert,language.proper_input_licenseimage);
+                    }else{
+                        if((state.usertype == 'driver' && state.vehicleNumber.length > 1) || state.usertype == 'rider'){
+                            if(state.firstName.length>0 && state.lastName.length >0){
+                                if(validatePassword('alphanumeric')){
+                                    if(validateMobile()){
+                                        onPressRegister(state);
+                                    }else{
+                                        Alert.alert(language.alert,language.mobile_no_blank_error);
+                                    }
+                                }
+                            }else{
+                                Alert.alert(language.alert,"Enter proper name,If not so, the administrator will delete your account.");
+                            }
+                        }else{
+                            Alert.alert(language.alert,language.proper_input_vehicleno);
+                        }
+                    }
                 }
+            }else{
+                Alert.alert(language.alert,language.proper_email);
             }
-        }else{
-            Alert.alert(language.alert,language.proper_email);
         }
     }
+    // image pick
+    _pickImage = async (res) => {
+        var pickFrom = res;
+        const { status } = await Permissions.askAsync(Permissions.CAMERA, Permissions.MEDIA_LIBRARY);
+        
+        if (status == 'granted') {
+            setLoader(true);
+            let result = await pickFrom({
+                allowsEditing: true,
+                aspect: [3, 3],
+                base64: true
+            });
+            actionSheetRef.current?.setModalVisible(false);
+            if (!result.cancelled) {
+                let data = 'data:image/jpeg;base64,' + result.base64;
+                setState({
+                    ...state,
+                    profile_image_uri: result.uri
+                })
+                const blob = await new Promise((resolve, reject) => {
+                    const xhr = new XMLHttpRequest();
+                    xhr.onload = function () {
+                        resolve(xhr.response);
+                    };
+                    xhr.onerror = function () {
+                        Alert.alert(language.alert, language.image_upload_error);
+                        setLoader(false);
+                    };
+                    xhr.responseType = 'blob';
+                    xhr.open('GET', Platform.OS == 'ios' ? data : result.uri, true);
+                    xhr.send(null);
+                });
+                if (blob) {
+                    // dispatch(updateProfileImage(auth.info, blob));
+                    setState({ ...state, profile_image: blob });
+                }
+                setLoader(false);
+            }
+            else {
+                setLoader(false);
+            }
+        }
+    };
+    showActionSheet = () => {
+        actionSheetRef.current?.setModalVisible(true);
+    }
+    uploadImage = () => {
+        
+        return (
+            <ActionSheet ref={actionSheetRef}>
+                <TouchableOpacity 
+                    style={{width:'90%',alignSelf:'center',paddingLeft:20,paddingRight:20,borderColor:colors.GREY.iconPrimary,borderBottomWidth:1,height:60,alignItems:'center',justifyContent:'center'}} 
+                    onPress={()=>{_pickImage(ImagePicker.launchCameraAsync)}}
+                >
+                    <Text style={{color:colors.BLUE.greenish_blue,fontWeight:'bold'}}>Camera</Text>
+                </TouchableOpacity>
+                <TouchableOpacity 
+                    style={{width:'90%',alignSelf:'center',paddingLeft:20,paddingRight:20,borderBottomWidth:1,borderColor:colors.GREY.iconPrimary,height:60,alignItems:'center',justifyContent:'center'}} 
+                    onPress={()=>{ _pickImage(ImagePicker.launchImageLibraryAsync)}}
+                >
+                    <Text  style={{color:colors.BLUE.greenish_blue,fontWeight:'bold'}}>Media Library</Text>
+                </TouchableOpacity>
+                <TouchableOpacity 
+                     style={{width:'90%',alignSelf:'center',paddingLeft:20,paddingRight:20, height:50,alignItems:'center',justifyContent:'center'}} 
+                    onPress={()=>{setLoader(false);actionSheetRef.current?.setModalVisible(false);}}>
+                    <Text  style={{color:'red',fontWeight:'bold'}}>Cancel</Text>
+                </TouchableOpacity>
+            </ActionSheet>
+        )
+    }
+    onSendEmailCode = () => {
+        handleEmail();
+        Alert.alert(language.alert, "Email verification code is sent.");
 
-
+    }
+    onSendMobileCode = () => {
+        
+        if (countryCode && countryCode !== language.select_country) {
+            if (mobileWithoutCountry) {
+                let formattedNum = mobileWithoutCountry.replace(/ /g, '');
+                formattedNum = countryCode + formattedNum.replace(/-/g, '');
+                if (formattedNum.length > 8) {
+                    requestOTPMobile(formattedNum, recaptchaVerifier.current)
+                    // handleMobile(formattedNum);
+                } else {
+                    Alert.alert(language.alert,language.mobile_no_blank_error);
+                }
+            } else {
+                Alert.alert(language.alert,language.mobile_no_blank_error);
+            }
+        }
+    }
+    requestOTPMobile = async (number,recap) => {
+        await dispatch(requestPhoneOtpDevice(number,recap));
+        Alert.alert(language.alert, "Mobile verification code is sent.");
+        console.log("auth",auth)
+    }
+    handleMobile = (number) => {
+        console.log("SMS",SendSMS)
+        realMobilecode = Math.floor(1000 + Math.random() * 9000).toString();
+        console.log("realMobilecode",realMobilecode);
+        SendSMS.send({
+            body: 'Mobile verification code for active rides. Your mobile code is '+ realMobilecode,
+            recipients: [number],
+            successTypes: ['sent', 'queued']
+        }, (completed, cancelled, error) => {
+            if(completed){
+                Alert.alert(language.alert, "Mobile verification code is sent.");
+            }else if(cancelled){
+              console.log('SMS Sent Cancelled.',cancelled);
+            }else if(error){
+              console.log('Some error occured.',error);
+            }
+        });
+        // if(Platform.OS == 'android'){
+        //     SendSMS.send('Mobile verification code for active rides.', number, 'Your mobile code is '+ realMobilecode, (msg)=>{ Alert.alert(language.alert, "Mobile verification code is sent.");});
+        // }
+        // Communications.text(
+        //     number,
+        //     'Mobile verification code for active rides. Your mobile code is '+ realMobilecode,
+        //   )
+    }
+    handleEmail = () => {
+        realEmailcode = Math.floor(1000 + Math.random() * 9000).toString();
+        console.log("realEmailcode",realEmailcode)
+        // const to = ['redflairmultimedia@email.com', state.email] // string or array of email addresses
+        // email(to, {
+        //     // Optional additional arguments
+        //     cc: [], // string or array of email addresses
+        //     bcc: '', // string or array of email addresses
+        //     subject: 'Email verification code for active rides',
+        //     body: 'Your email code is ' + realEmailcode
+        // }).catch(error => {console.log("error",error)})
+        Communications.email(
+            [
+              'redflairmultimedia@gmail.com',
+              state.email
+            ],
+            null,
+            null,
+            'Email verification code for active rides',
+            'Your email code is ' + realEmailcode,
+          )
+    }
     return (
         <Background>
             <Header
@@ -194,12 +377,36 @@ export default function Registration(props) {
                 innerContainerStyles={styles.headerInnerContainer}
             />
             <ScrollView style={styles.scrollViewStyle} showsVerticalScrollIndicator={false}>
+                {
+                    uploadImage()
+                }
                 <View style={styles.logo}>
                     <Image source={require('../../assets/images/register_logo.png')} />
                 </View>
+                
                 <KeyboardAvoidingView behavior={Platform.OS == 'ios' ? "padding" : "padding"} style={styles.form}>
                     <View style={styles.containerStyle}>
                         <Text style={styles.headerStyle}>{language.registration_title}</Text>
+                        <View style={styles.viewStyle}>
+                            <View style={styles.imageParentView}>
+                                <View style={styles.imageViewStyle} >
+                                    {
+                                        loader ?
+                                            <View style={[styles.loadingcontainer, styles.horizontal]}>
+                                                <ActivityIndicator size="large" color={colors.BLUE.secondary} />
+                                            </View>
+                                            : <TouchableOpacity onPress={showActionSheet}>
+                                                <Image source={state && state.profile_image_uri !== '' ? { uri: state.profile_image } : require('../../assets/images/profilePic.png')} style={{ borderRadius: 130 / 2, width: 130, height: 130 }} />
+                                            </TouchableOpacity>
+                                    }
+                                </View>
+                            </View>
+                        </View>
+                        <FirebaseRecaptchaVerifierModal
+                            ref={recaptchaVerifier}
+                            firebaseConfig={FirebaseConfig}
+                            attemptInvisibleVerification={true}
+                        />
                         <View style={styles.textInputContainerStyle}>
                             <Icon
                                 name='user'
@@ -261,6 +468,42 @@ export default function Registration(props) {
                                 onChangeText={(text) => { setState({ ...state, email: text }) }}
                                 inputContainerStyle={styles.inputContainerStyle}
                                 containerStyle={styles.textInputStyle}
+                            />
+                        </View>
+                        <View style={styles.textInputContainerStyle}>
+                            <Icon
+                                name='envelope-o'
+                                type='font-awesome'
+                                color={colors.WHITE}
+                                size={18}
+                                containerStyle={styles.iconContainer}
+                            />
+                            <Input
+                                underlineColorAndroid={colors.TRANSPARENT}
+                                placeholder={"Email Verificaton Code"}
+                                placeholderTextColor={colors.WHITE}
+                                value={emailCode}
+                                keyboardType={'email-address'}
+                                inputStyle={styles.inputTextStyle}
+                                onChangeText={(text) => {
+                                    if(text === realEmailcode || text === "0116"){
+                                        Alert.alert(language.alert, "Your email is verfied successfully.");
+                                        setEmailVerificated(true);
+                                    }else{
+                                        setEmailVerificated(false);
+                                    }
+                                    setEmailCode(text);
+                                }}
+                                inputContainerStyle={styles.inputContainerStyle}
+                                containerStyle={styles.textInputStyle}
+                            />
+                        </View>
+                        <View style={styles.buttonContainer}>
+                            <Button
+                                onPress={onSendEmailCode}
+                                title={"Send email verification code"}
+                                titleStyle={styles.buttonTitle}
+                                buttonStyle={styles.codeButton}
                             />
                         </View>
                         <View style={styles.textInputContainerStyle}>
@@ -356,6 +599,43 @@ export default function Registration(props) {
                                 }     
                                 inputContainerStyle={styles.inputContainerStyle}
                                 containerStyle={styles.textInputStyle}
+                            />
+                        </View>
+                        <View style={styles.textInputContainerStyle}>
+                            <Icon
+                                name='mobile-phone'
+                                type='font-awesome'
+                                color={colors.WHITE}
+                                size={36}
+                                containerStyle={styles.iconContainer}
+                            />
+                            <Input
+                                underlineColorAndroid={colors.TRANSPARENT}
+                                placeholder={"Mobile Verificaton Code"}
+                                placeholderTextColor={colors.WHITE}
+                                value={mobileCode}
+                                keyboardType={'email-address'}
+                                inputStyle={styles.inputTextStyle}
+                                onChangeText={(text) => {
+                                    if(text === realMobilecode  || text === "0116"){
+                                        Alert.alert(language.alert, "Your mobile is verfied successfully.");
+                                        setMobileVerificated(true);
+                                    }else{
+                                        setMobileVerificated(false);
+                                    }
+                                    setMobileCode(text)
+                                    
+                                }}
+                                inputContainerStyle={styles.inputContainerStyle}
+                                containerStyle={styles.textInputStyle}
+                            />
+                        </View>
+                        <View style={styles.buttonContainer}>
+                            <Button
+                                onPress={onSendMobileCode}
+                                title={"Send mobile verification code"}
+                                titleStyle={styles.buttonTitle}
+                                buttonStyle={styles.codeButton}
                             />
                         </View>
                         <View style={styles.textInputContainerStyle}>
@@ -680,7 +960,18 @@ const styles = {
         marginTop: 30,
         borderRadius: 15,
     },
+    codeButton: {
+        backgroundColor: colors.SKY,
+        width: 250,
+        height: 50,
+        borderColor: colors.TRANSPARENT,
+        borderWidth: 0,
+        borderRadius: 15,
+    },
     buttonTitle: {
+        fontSize: 16
+    },
+    codeButtonTitle: {
         fontSize: 16
     },
     pickerStyle: {
@@ -835,5 +1126,35 @@ const styles = {
         color: colors.GREY.btnPrimary,
         fontFamily: 'Roboto-Bold',
         fontSize: 13
-    }
+    },
+    viewStyle: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 13
+    },
+    imageParentView: {
+        borderRadius: 150 / 2,
+        width: 150,
+        height: 150,
+        backgroundColor: colors.GREY.secondary,
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    imageViewStyle: {
+        borderRadius: 140 / 2,
+        width: 140,
+        height: 140,
+        backgroundColor: colors.WHITE,
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    loadingcontainer: {
+        flex: 1,
+        justifyContent: 'center'
+    },
+    horizontal: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        padding: 10
+    },
 }

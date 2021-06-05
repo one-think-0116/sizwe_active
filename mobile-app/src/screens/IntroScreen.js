@@ -10,6 +10,8 @@ import {
     Platform,
     Alert,
 } from "react-native";
+// import VersionCheck from 'react-native-version-check';
+import { checkVersion } from "react-native-check-version";
 import MaterialButtonDark from "../components/MaterialButtonDark";
 import * as Facebook from 'expo-facebook';
 import { language } from 'config';
@@ -36,7 +38,32 @@ export default function IntroScreen(props) {
     const settings = useSelector(state => state.settingsdata.settings);
     const pageActive = useRef(false);
 
+
+    // VersionCheck.getLatestVersion()    // Automatically choose profer provider using `Platform.select` by device platform.
+    // .then(latestVersion => {
+    //     console.log("version",latestVersion,Platform.OS);    // 0.1.2
+    // });
+    // VersionCheck.needUpdate()
+    // .then(async res => {
+    //     console.log("reds",res.isNeeded);    // true
+    //     if (res.isNeeded) {
+    //     //Linking.openURL(res.storeUrl);  // open store if update is needed.
+    //     }
+    // });
+    const versionCheck = async () => {
+        const version = await checkVersion();
+        console.log("Got version info:", version,Platform.OS);
+        if (version.needsUpdate) {
+            if(Platform.OS == "ios"){
+                Linking.openURL('https://apps.apple.com/us/app/active-rides/id1568461255')
+            }else{
+                Linking.openURL('https://play.google.com/store/apps/details?id=com.activerides.taxi.company.app')
+            }
+        }
+    }
+    
     useEffect(() => {
+        versionCheck()
         if (auth.info && pageActive.current) {
             pageActive.current = false;
             props.navigation.navigate('AuthLoading');

@@ -208,6 +208,8 @@ export const emailSignUp = (regData) => async (firebase) => {
   let url = `${cloud_function_server_url}/user_signup`;
 
   const {
+    singleUserRef,
+    profileImageRef,
     driverDocsRef
   } = firebase;
   let createDate = new Date();
@@ -217,17 +219,25 @@ export const emailSignUp = (regData) => async (firebase) => {
     await driverDocsRef(timestamp).put(regData.licenseImage);
     regData.licenseImage = await driverDocsRef(timestamp).getDownloadURL();
   }
+  const {profile_image, ...dataExceptProfile} = regData;
   const response = await fetch(url, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ regData: regData })
+    body: JSON.stringify({ regData: dataExceptProfile })
   })
+  let uid = response.uid;
+  await profileImageRef(uid).put(profile_image);
+  const profileImageUrl= await profileImageRef(uid).getDownloadURL();
+  await singleUserRef(uid).update({
+    profile_image: profileImageUrl
+  });
   return await response.json();
 };
 
 export const requestPhoneOtpDevice = (phoneNumber, appVerifier) => (dispatch) => async (firebase) => {
+  
   const {
     phoneProvider
   } = firebase;
@@ -240,12 +250,14 @@ export const requestPhoneOtpDevice = (phoneNumber, appVerifier) => (dispatch) =>
       phoneNumber,
       appVerifier
     );
+    console.log("verificationId",verificationId)
     dispatch({
       type: REQUEST_OTP_SUCCESS,
       payload: verificationId
     });
   }
   catch (error) {
+    console.log("verificationId err",error)
     dispatch({
       type: REQUEST_OTP_FAILED,
       payload: error

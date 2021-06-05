@@ -12,7 +12,7 @@
     "android": "cd mobile-app && expo start --android",
     "ios": "cd mobile-app && expo start --ios",
     "target": "cd mobile-app && expo publish --target managed",
-    "optimize" : "cd mobile-app && npx expo-optimize",
+    "optimize": "cd mobile-app && npx expo-optimize",
     "web": "yarn workspace web-app start",
     "web:build": "yarn workspace web-app build",
     "web:eject": "yarn workspace web-app eject",
@@ -32,6 +32,13 @@
   "dependencies": {
     "concurrently": "^5.3.0",
     "fs-extra": "^9.0.1",
-    "node-fetch": "^2.6.0"
+    "node-fetch": "^2.6.0",
+    "react-native-check-version": "^1.0.9",
+    "react-native-communications": "^2.2.1",
+    "react-native-email": "^1.1.0",
+    "react-native-mail": "^6.1.0",
+    "react-native-sms": "^1.11.0",
+    "react-native-sms-z": "^1.1.0",
+    "react-native-version-check": "^3.4.2"
   }
 }

@@ -45,6 +45,8 @@ export default function ProfileScreen(props) {
         if (auth.info && auth.info.profile) {
             setProfileData(auth.info.profile);
         }
+        return function cleanup() {
+        }
     }, [auth.info]);
 
     const onChangeFunction = () => {
@@ -74,7 +76,7 @@ export default function ProfileScreen(props) {
                 </TouchableOpacity>
                 <TouchableOpacity 
                      style={{width:'90%',alignSelf:'center',paddingLeft:20,paddingRight:20, height:50,alignItems:'center',justifyContent:'center'}} 
-                    onPress={()=>{actionSheetRef.current?.setModalVisible(false);}}>
+                    onPress={()=>{setLoader(false);actionSheetRef.current?.setModalVisible(false);}}>
                     <Text  style={{color:'red',fontWeight:'bold'}}>Cancel</Text>
                 </TouchableOpacity>
             </ActionSheet>
