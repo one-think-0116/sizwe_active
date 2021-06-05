@@ -206,7 +206,7 @@ export const checkUserExists = async (regData) => {
 export const emailSignUp = (regData) => async (firebase) => {
 
   let url = `${cloud_function_server_url}/user_signup`;
-
+  console.log("url",url)
   const {
     singleUserRef,
     profileImageRef,
@@ -220,6 +220,7 @@ export const emailSignUp = (regData) => async (firebase) => {
     regData.licenseImage = await driverDocsRef(timestamp).getDownloadURL();
   }
   const {profile_image, ...dataExceptProfile} = regData;
+  console.log("dataExceptProfile",dataExceptProfile)
   const response = await fetch(url, {
     method: 'POST',
     headers: {
@@ -227,7 +228,9 @@ export const emailSignUp = (regData) => async (firebase) => {
     },
     body: JSON.stringify({ regData: dataExceptProfile })
   })
+  console.log("fetch end")
   let uid = response.uid;
+  console.log("uid",uid,response)
   await profileImageRef(uid).put(profile_image);
   const profileImageUrl= await profileImageRef(uid).getDownloadURL();
   await singleUserRef(uid).update({

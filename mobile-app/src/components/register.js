@@ -48,7 +48,6 @@ export default function Registration(props) {
     } = api;
     const [state, setState] = useState({
         profile_image: null,
-        profile_image_uri: '',
         usertype: 'rider',
         firstName: '',
         lastName: '',
@@ -72,6 +71,7 @@ export default function Registration(props) {
     const [mobileVerificated,setMobileVerificated] = useState(false);
     const [mobileCode,setMobileCode] = useState('');
     const [capturedImage, setCapturedImage] = useState(null);
+    const [capturedProfileImage, setCapturedProfileImage] = useState(null);
     const [confirmpassword,setConfirmPassword] = useState('');
     const [countryCode,setCountryCode] = useState("+" + default_country_code.phone);
     const [mobileWithoutCountry, setMobileWithoutCountry] = useState('');
@@ -239,10 +239,7 @@ export default function Registration(props) {
             actionSheetRef.current?.setModalVisible(false);
             if (!result.cancelled) {
                 let data = 'data:image/jpeg;base64,' + result.base64;
-                setState({
-                    ...state,
-                    profile_image_uri: result.uri
-                })
+                setCapturedProfileImage(result.uri);
                 const blob = await new Promise((resolve, reject) => {
                     const xhr = new XMLHttpRequest();
                     xhr.onload = function () {
@@ -295,8 +292,9 @@ export default function Registration(props) {
         )
     }
     onSendEmailCode = () => {
-        handleEmail();
-        Alert.alert(language.alert, "Email verification code is sent.");
+        console.log("state.imauril",capturedProfileImage,capturedImage)
+        // handleEmail();
+        // Alert.alert(language.alert, "Email verification code is sent.");
 
     }
     onSendMobileCode = () => {
@@ -396,7 +394,7 @@ export default function Registration(props) {
                                                 <ActivityIndicator size="large" color={colors.BLUE.secondary} />
                                             </View>
                                             : <TouchableOpacity onPress={showActionSheet}>
-                                                <Image source={state && state.profile_image_uri !== '' ? { uri: state.profile_image } : require('../../assets/images/profilePic.png')} style={{ borderRadius: 130 / 2, width: 130, height: 130 }} />
+                                                <Image source={ capturedProfileImage ? { uri: capturedProfileImage } : require('../../assets/images/profilePic.png')} style={{ borderRadius: 130 / 2, width: 130, height: 130 }} />
                                             </TouchableOpacity>
                                     }
                                 </View>
