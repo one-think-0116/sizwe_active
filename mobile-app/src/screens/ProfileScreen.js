@@ -68,12 +68,12 @@ export default function ProfileScreen(props) {
                 >
                     <Text style={{color:colors.BLUE.greenish_blue,fontWeight:'bold'}}>Camera</Text>
                 </TouchableOpacity>
-                <TouchableOpacity 
+                {/* <TouchableOpacity 
                     style={{width:'90%',alignSelf:'center',paddingLeft:20,paddingRight:20,borderBottomWidth:1,borderColor:colors.GREY.iconPrimary,height:60,alignItems:'center',justifyContent:'center'}} 
                     onPress={()=>{ _pickImage(ImagePicker.launchImageLibraryAsync)}}
                 >
                     <Text  style={{color:colors.BLUE.greenish_blue,fontWeight:'bold'}}>Media Library</Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
                 <TouchableOpacity 
                      style={{width:'90%',alignSelf:'center',paddingLeft:20,paddingRight:20, height:50,alignItems:'center',justifyContent:'center'}} 
                     onPress={()=>{setLoader(false);actionSheetRef.current?.setModalVisible(false);}}>

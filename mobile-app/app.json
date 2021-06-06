@@ -11,7 +11,7 @@
       "notification": {
         "icon": "./assets/images/logo96x96.png"
       },
-      "version": "1.0.7",
+      "version": "1.0.10",
       "orientation": "portrait",
       "icon": "./assets/images/logo1024x1024.png",
       "splash": {
@@ -49,11 +49,11 @@
           "googleMapsApiKey": "AIzaSyBT8nUw4TYGizsmvQPoO_3jvFVdyZx7w3E"
         },
         "googleServicesFile": "./GoogleService-Info.plist",
-        "buildNumber": "1.0.7"
+        "buildNumber": "1"
       },
       "android": {
         "package": "com.activerides.taxi.company.app",
-        "versionCode": 107,
+        "versionCode": 1010,
         "permissions": [
           "CAMERA",
           "READ_EXTERNAL_STORAGE",

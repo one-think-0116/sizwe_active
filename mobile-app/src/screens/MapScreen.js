@@ -62,7 +62,10 @@ export default function MapScreen(props) {
     const [mapMoved,setMapMoved] = useState(false);
     const [region,setRegion] = useState(null);
     const pageActive = useRef(false);
-
+    if(!auth.info.profile){
+        Alert.alert(language.alert, "Please upload your profile image.");
+        props.navigation.navigate('Profile');
+    }
     useEffect(() => {
         if (cars) {
             resetCars();
@@ -130,7 +133,9 @@ export default function MapScreen(props) {
     },[])
 
     useEffect(() => {  
-        if(gps.location){  
+        
+        if(gps.location){
+            
             setRegion({
                 latitude: gps.location.lat,
                 longitude: gps.location.lng,

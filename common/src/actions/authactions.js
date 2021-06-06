@@ -220,7 +220,10 @@ export const emailSignUp = (regData) => async (firebase) => {
     regData.licenseImage = await driverDocsRef(timestamp).getDownloadURL();
   }
   const {profile_image, ...dataExceptProfile} = regData;
-  console.log("dataExceptProfile",dataExceptProfile)
+  let profileImageUid = "user_" + createDate.getTime().toString();
+  await profileImageRef(profileImageUid).put(profile_image);
+  let downloadImageUrl = await profileImageRef(profileImageUid).getDownloadURL();
+  dataExceptProfile.profile_image = downloadImageUrl;
   const response = await fetch(url, {
     method: 'POST',
     headers: {
@@ -228,14 +231,6 @@ export const emailSignUp = (regData) => async (firebase) => {
     },
     body: JSON.stringify({ regData: dataExceptProfile })
   })
-  console.log("fetch end")
-  let uid = response.uid;
-  console.log("uid",uid,response)
-  await profileImageRef(uid).put(profile_image);
-  const profileImageUrl= await profileImageRef(uid).getDownloadURL();
-  await singleUserRef(uid).update({
-    profile_image: profileImageUrl
-  });
   return await response.json();
 };
 
@@ -253,7 +248,6 @@ export const requestPhoneOtpDevice = (phoneNumber, appVerifier) => (dispatch) =>
       phoneNumber,
       appVerifier
     );
-    console.log("verificationId",verificationId)
     dispatch({
       type: REQUEST_OTP_SUCCESS,
       payload: verificationId

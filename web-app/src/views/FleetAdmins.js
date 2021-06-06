@@ -33,8 +33,8 @@ export default function Users() {
     { title: language.createdAt, field: 'createdAt', editable:'never', defaultSort:'desc',render: rowData => rowData.createdAt?new Date(rowData.createdAt).toLocaleString(dateStyle):null},
     { title: language.first_name, field: 'firstName', initialEditValue: '' },
     { title: language.last_name, field: 'lastName', initialEditValue: '' },
-    { title: language.email, field: 'email', editable:'onAdd'},
-    { title: language.mobile, field: 'mobile', editable:'onAdd'},
+    { title: language.email, field: 'email'},
+    { title: language.mobile, field: 'mobile'},
     { title: language.profile_image,  field: 'profile_image', render: rowData => rowData.profile_image?<img alt='Profile' src={rowData.profile_image} style={{width: 50,borderRadius:'50%'}}/>:null, editable:'never'},
     { title: language.account_approve,  field: 'approved', type:'boolean', initialEditValue: true }
   ];

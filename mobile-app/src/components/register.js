@@ -41,7 +41,7 @@ import { useDispatch, useSelector } from 'react-redux';
 let realEmailcode;
 let realMobilecode;
 export default function Registration(props) {
-    const { api } = useContext(FirebaseContext);
+    const { app,api,mobileAuthCredential } = useContext(FirebaseContext);
     const auth = useSelector(state => state.auth);
     const {
         requestPhoneOtpDevice,
@@ -186,13 +186,13 @@ export default function Registration(props) {
 
     //register button press for validation
     onPressRegister = () => {
-        if(!emailVerificated && !mobileVerificated){
-            Alert.alert(language.alert,"Please verify email and mobile");
-        }else if(emailVerificated && !mobileVerificated){
-            Alert.alert(language.alert,"Please verify mobile");
-        }else if(!emailVerificated && mobileVerificated){
-            Alert.alert(language.alert,"Please verify email");
-        }else if(emailVerificated && mobileVerificated){
+        // if(!emailVerificated && !mobileVerificated){
+        //     Alert.alert(language.alert,"Please verify email and mobile");
+        // }else if(emailVerificated && !mobileVerificated){
+        //     Alert.alert(language.alert,"Please verify mobile");
+        // }else if(!emailVerificated && mobileVerificated){
+        //     Alert.alert(language.alert,"Please verify email");
+        // }else if(emailVerificated && mobileVerificated){
             const { onPressRegister } = props;
             const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
             if(re.test(state.email)){
@@ -222,7 +222,7 @@ export default function Registration(props) {
             }else{
                 Alert.alert(language.alert,language.proper_email);
             }
-        }
+        // }
     }
     // image pick
     _pickImage = async (res) => {
@@ -277,12 +277,12 @@ export default function Registration(props) {
                 >
                     <Text style={{color:colors.BLUE.greenish_blue,fontWeight:'bold'}}>Camera</Text>
                 </TouchableOpacity>
-                <TouchableOpacity 
+                {/* <TouchableOpacity 
                     style={{width:'90%',alignSelf:'center',paddingLeft:20,paddingRight:20,borderBottomWidth:1,borderColor:colors.GREY.iconPrimary,height:60,alignItems:'center',justifyContent:'center'}} 
                     onPress={()=>{ _pickImage(ImagePicker.launchImageLibraryAsync)}}
                 >
                     <Text  style={{color:colors.BLUE.greenish_blue,fontWeight:'bold'}}>Media Library</Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
                 <TouchableOpacity 
                      style={{width:'90%',alignSelf:'center',paddingLeft:20,paddingRight:20, height:50,alignItems:'center',justifyContent:'center'}} 
                     onPress={()=>{setLoader(false);actionSheetRef.current?.setModalVisible(false);}}>
@@ -365,6 +365,29 @@ export default function Registration(props) {
             'Email verification code for active rides',
             'Your email code is ' + realEmailcode,
           )
+    }
+    onConfirmMobile = () => {
+        // console.log("mobile",mobileCode,auth)
+        if(auth.verificationId === null && mobileCode === ''){
+            Alert.alert(language.alert, "Please input your phone number and send code.Then check verification code and input code and confirm it.");
+        }else if(auth.verificationId !== null && mobileCode === ''){
+            Alert.alert(language.alert, "Please check verification code and input code and confirm it.");
+        }else if(auth.verificationId === null && mobileCode !== ''){
+            Alert.alert(language.alert, "First of all input your phone number and send code.");
+        }else{
+            let credential = mobileAuthCredential(auth.verificationId,mobileCode);
+            // let credential = mobileAuthCredential("ALiwoWJzzj-yRRA-OjPEJ3GgXL-ucLTVHSsVZmJ3ucz8iiAU76sq1t-52zmcBx1ugHS1mwYYDTTpHpWjIknK9mZbEhAeNDgLfaTrEfSC9GyTVH3lx_SH7b8KNRPlkrgKh_EJe-dlJhsAJMqcRAufgdDGDHN_S2no59ImBn3YMiPVFiILcOA42rw1unANAyuaRDZu4RZ-zdn03WtNYCfTFFXHPP6EZpxM2A",mobileCode);
+            // console.log("credential" , credential)
+            app.auth().signInWithCredential(credential)
+            .then((user) => {
+                Alert.alert(language.alert, "Your mobile is verfied successfully.");
+                setMobileVerificated(true);
+            //OnAuthStateChange takes care of Navigation
+            }).catch(error => {
+                Alert.alert(language.alert, "Your mobile is not verfied successfully.");
+                setMobileVerificated(false);
+            });
+        }
     }
     return (
         <Background>
@@ -468,7 +491,7 @@ export default function Registration(props) {
                                 containerStyle={styles.textInputStyle}
                             />
                         </View>
-                        <View style={styles.textInputContainerStyle}>
+                        {/* <View style={styles.textInputContainerStyle}>
                             <Icon
                                 name='envelope-o'
                                 type='font-awesome'
@@ -503,7 +526,7 @@ export default function Registration(props) {
                                 titleStyle={styles.buttonTitle}
                                 buttonStyle={styles.codeButton}
                             />
-                        </View>
+                        </View> */}
                         <View style={styles.textInputContainerStyle}>
                             <Icon
                                 name='lock'
@@ -599,7 +622,7 @@ export default function Registration(props) {
                                 containerStyle={styles.textInputStyle}
                             />
                         </View>
-                        <View style={styles.textInputContainerStyle}>
+                        {/* <View style={styles.textInputContainerStyle}>
                             <Icon
                                 name='mobile-phone'
                                 type='font-awesome'
@@ -615,12 +638,12 @@ export default function Registration(props) {
                                 keyboardType={'email-address'}
                                 inputStyle={styles.inputTextStyle}
                                 onChangeText={(text) => {
-                                    if(text === realMobilecode  || text === "0116"){
-                                        Alert.alert(language.alert, "Your mobile is verfied successfully.");
-                                        setMobileVerificated(true);
-                                    }else{
-                                        setMobileVerificated(false);
-                                    }
+                                    // if(text === realMobilecode  || text === "0116"){
+                                    //     Alert.alert(language.alert, "Your mobile is verfied successfully.");
+                                    //     setMobileVerificated(true);
+                                    // }else{
+                                    //     setMobileVerificated(false);
+                                    // }
                                     setMobileCode(text)
                                     
                                 }}
@@ -631,11 +654,17 @@ export default function Registration(props) {
                         <View style={styles.buttonContainer}>
                             <Button
                                 onPress={onSendMobileCode}
-                                title={"Send mobile verification code"}
+                                title={"Send code"}
                                 titleStyle={styles.buttonTitle}
-                                buttonStyle={styles.codeButton}
+                                buttonStyle={styles.mobileButton}
                             />
-                        </View>
+                            <Button
+                                onPress={onConfirmMobile}
+                                title={"Confirm code"}
+                                titleStyle={styles.buttonTitle}
+                                buttonStyle={styles.mobileButton}
+                            />
+                        </View> */}
                         <View style={styles.textInputContainerStyle}>
                             <Icon
                                 name='lock'
@@ -961,13 +990,22 @@ const styles = {
     codeButton: {
         backgroundColor: colors.SKY,
         width: 250,
-        height: 50,
+        height: 40,
         borderColor: colors.TRANSPARENT,
         borderWidth: 0,
         borderRadius: 15,
     },
+    mobileButton: {
+        backgroundColor: colors.SKY,
+        width: 140,
+        height: 40,
+        borderColor: colors.TRANSPARENT,
+        borderWidth: 0,
+        borderRadius: 15,
+        marginLeft: 10
+    },
     buttonTitle: {
-        fontSize: 16
+        fontSize: 13
     },
     codeButtonTitle: {
         fontSize: 16

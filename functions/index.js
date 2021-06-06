@@ -491,7 +491,8 @@ exports.user_signup = functions.https.onRequest(async (request, response) => {
             referralId: userDetails.firstName.toLowerCase() + Math.floor(1000 + Math.random() * 9000).toString(),
             approved: true,
             walletBalance: 0,
-            pushToken: 'init'
+            pushToken: 'init',
+            profile_image:userDetails.profile_image
         };
         let settingdata = await admin.database().ref('settings').once("value");
         let settings = settingdata.val();
@@ -516,7 +517,7 @@ exports.user_signup = functions.https.onRequest(async (request, response) => {
             phoneNumber: userDetails.mobile,
             password: userDetails.password,
             emailVerified: settings.email_verify ? false : true
-        });
+        }).catch(error => console.log("error",error));
         if(userRecord && userRecord.uid){
             await admin.database().ref('users/' + userRecord.uid).set(regData);
             if(userDetails.signupViaReferral && settings.bonus > 0){
@@ -525,9 +526,9 @@ exports.user_signup = functions.https.onRequest(async (request, response) => {
             }
             response.send({ uid: userRecord.uid });
         }else{
-            response.send({ error: "User Not Created" });
+            response.send({ error: "User Not Created1" });
         }
     }catch(error){
-        response.send({ error: "User Not Created" });
+        response.send({ error: "User Not Created2" });
     }
 });

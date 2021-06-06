@@ -7,7 +7,8 @@ import { language, dateStyle } from 'config';
 import { useDispatch, useSelector } from 'react-redux';
 import { FirebaseContext } from 'common/src';
 import { Alert } from 'react-native';
-
+import { MapComponent } from '../components';
+import * as Location from 'expo-location';
 var { width, height } = Dimensions.get('window');
 
 export default function DriverTrips(props) {
@@ -15,8 +16,12 @@ export default function DriverTrips(props) {
     const {
         acceptTask,
         cancelTask,
-        updateProfile
+        updateProfile,
+        fetchDrivers
     } = api;
+
+    const latitudeDelta = 0.0922;
+    const longitudeDelta = 0.0421;
     const dispatch = useDispatch();
     const tasks = useSelector(state => state.taskdata.tasks);
     const settings = useSelector(state => state.settingsdata.settings);
@@ -25,7 +30,66 @@ export default function DriverTrips(props) {
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
     const [activeBookings, setActiveBookings] = useState([]);
-
+    const [availableDrivers, setDrivers] = useState([]);
+    const usersdata = useSelector(state => state.usersdata);
+    const gps = useSelector(state => state.gpsdata);
+    const [region,setRegion] = useState({
+        latitude: 6.6434735,
+        longitude: 3.3275082,
+        latitudeDelta: latitudeDelta,
+        longitudeDelta: longitudeDelta
+    });
+    const [mapMoved,setMapMoved] = useState(false);
+    if(!auth.info.profile){
+        Alert.alert(language.alert, "Please upload your profile image.");
+        props.navigation.navigate('Profile');
+    }
+    useEffect(()=>{
+        setInterval(() => {
+                dispatch(fetchDrivers());
+        }, 1000);
+        return function cleanup() {
+        }
+    },[])
+    // useEffect(()=>{
+    //     if(mylocation == null){
+    //         navigator.geolocation.getCurrentPosition(
+    //             position => setMylocation({ 
+    //                 latitude: 6.6434735, 
+    //                 // latitude: position.coords.latitude, 
+    //                 longitude: 3.3275082,
+    //                 // longitude: position.coords.longitude,
+    //                 // latitudeDelta: latitudeDelta,
+    //                 // longitudeDelta: longitudeDelta
+    //             }), 
+    //             err => console.log(err)
+    //         );
+    //     }
+    // },[mylocation]);
+    useEffect(() => {
+        if(gps.location){
+            setRegion({
+                latitude: gps.location.lat,
+                longitude: gps.location.lng,
+                latitudeDelta: latitudeDelta,
+                longitudeDelta: longitudeDelta
+            });
+        }
+        return function cleanup() {
+        }
+    }, [gps.location]);
+    useEffect(()=>{
+        if(usersdata.users){
+            const drivers = usersdata.users.filter(user => user.usertype ==='driver') ;  
+            let driver_array = [];
+            for(let i=0;i<drivers.length;i++){
+                if(drivers[i].approved && drivers[i].driverActiveStatus && drivers[i].location){
+                    driver_array.push(drivers[i])
+                }
+            }
+            setDrivers(driver_array);
+        }
+    },[usersdata.users,auth.info.profile,auth.info.uid]);
     useEffect(() => {
         if (bookinglistdata.bookings) {
             setActiveBookings(
@@ -77,7 +141,19 @@ export default function DriverTrips(props) {
         let res = !auth.info.profile.driverActiveStatus;
         dispatch(updateProfile(auth.info, { driverActiveStatus: res }));
     }
-
+    const onRegionChangeComplete = (newregion) => {
+        console.log("newregion",newregion)
+        setRegion(newregion);
+        if (mapMoved) {
+            setMapMoved(false);
+            
+        }
+    }
+    const onPanDrag = (coordinate, position) => {
+        if (!mapMoved) {
+            setMapMoved(true);
+        }
+    }
     return (
         <View style={styles.mainViewStyle}>
             <Header
@@ -103,20 +179,30 @@ export default function DriverTrips(props) {
                     (auth.info.profile.queue ? activeBookings : tasks) : []}
                 keyExtractor={(item, index) => index.toString()}
                 ListEmptyComponent={
-                    <View style={{ flex: 1, justifyContent: "center", alignItems: "center", height: height }}>
-                        <View>
-                            <Image
-                                source={require("../../assets/images/no_riders.png")}
-                                resizeMode="contain"
-                                style={{ height: 120, width: 200 }}
-                            ></Image>
-                        </View>
-                        <View>
-                            <Text style={styles.no_driver_style}>{
-                                auth.info && auth.info.profile && auth.info.profile.driverActiveStatus ?
-                                    language.rider_not_here : language.service_off
-                            }</Text>
-                        </View>
+                    // <View style={{ flex: 1, justifyContent: "center", alignItems: "center", height: height }}>
+                    //     <View>
+                    //         <Image
+                    //             source={require("../../assets/images/no_riders.png")}
+                    //             resizeMode="contain"
+                    //             style={{ height: 120, width: 200 }}
+                    //         ></Image>
+                    //     </View>
+                    //     <View>
+                    //         <Text style={styles.no_driver_style}>{
+                    //             auth.info && auth.info.profile && auth.info.profile.driverActiveStatus ?
+                    //                 language.rider_not_here : language.service_off
+                    //         }</Text>
+                    //     </View>
+                    // </View>
+                    <View style={styles.emptymapcontainer}>
+                        <MapComponent
+                            markerRef={marker => { marker = marker; }}
+                            mapStyle={styles.map}
+                            mapRegion={region}
+                            nearby={availableDrivers}
+                            // onRegionChangeComplete={onRegionChangeComplete}
+                            // onPanDrag={onPanDrag}
+                        />
                     </View>
                 }
                 renderItem={({ item, index }) => {
@@ -315,6 +401,15 @@ const styles = StyleSheet.create({
         flex: 1.5,
         width: width,
         height: 200,
+        borderWidth: 7,
+        borderColor: colors.WHITE,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    emptymapcontainer: {
+        flex: 1.5,
+        width: width,
+        height: height,
         borderWidth: 7,
         borderColor: colors.WHITE,
         justifyContent: 'center',
