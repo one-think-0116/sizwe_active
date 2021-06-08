@@ -6,7 +6,8 @@ const language = require('./language.json');
 const nodemailer = require('nodemailer');
 const cors = require('cors')({origin: true});
 const sgMail = require('@sendgrid/mail')
-sgMail.setApiKey('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')
+require('dotnet');
+sgMail.setApiKey(process.env.SENDGRID_APPKEY)
 
 admin.initializeApp();
 

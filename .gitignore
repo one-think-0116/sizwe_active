@@ -19,3 +19,4 @@ web-build/
 web-report/
 .vscode
 providers
+.env
