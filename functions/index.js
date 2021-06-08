@@ -3,6 +3,10 @@ const functions = require('firebase-functions');
 const fetch = require("node-fetch");
 const admin = require('firebase-admin');
 const language = require('./language.json');
+const nodemailer = require('nodemailer');
+const cors = require('cors')({origin: true});
+const sgMail = require('@sendgrid/mail')
+sgMail.setApiKey('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')
 
 admin.initializeApp();
 
@@ -31,6 +35,31 @@ exports.get_providers = functions.https.onRequest((request, response) => {
         });
     }
     response.send(arr);
+});
+exports.sendMail = functions.https.onRequest((req, res) => {
+    cors(req, res, () => {
+        res.set("Access-Control-Allow-Origin", "*");
+        res.set("Access-Control-Allow-Headers", "Content-Type");
+        // getting dest email by query string
+        const parseData = JSON.parse(req.body);
+        const dest = parseData.mailData.dest;
+        const response = parseData.mailData.response;
+        const msg = {
+            to: dest, // Change to your recipient
+            from: 'info@activerides.com.ng', // Change to your verified sender
+            subject: 'Hi, Active Rides User',
+            text: 'and easy to do anywhere, even with Node.js',
+            html: `<p style="font-size: 16px;">`+response+`</p>`
+          }
+        sgMail
+        .send(msg)
+        .then((response) => {
+            return res.send('Sended');
+        })
+        .catch((error) => {
+            console.error("error",error)
+        })
+    });    
 });
 
 exports.setup = functions.https.onRequest((request, response) => {

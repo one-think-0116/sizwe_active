@@ -51,6 +51,7 @@ export default function Users() {
       options={{
         exportButton: true,
         sorting: true,
+        pageSizeOptions: [5,10,20,100,500]
       }}
       editable={{
         onRowAdd: newData =>

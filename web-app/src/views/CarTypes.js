@@ -2,6 +2,8 @@ import React, { useState, useEffect, useContext } from 'react';
 import MaterialTable from 'material-table';
 import { useSelector, useDispatch } from "react-redux";
 import CircularLoading from "../components/CircularLoading";
+import { SketchPicker } from 'react-color';
+
 import {
   features,
   language
@@ -29,6 +31,10 @@ export default function CarTypes() {
     { title: language.active_rides_fees_comment, field: 'active_rides_fees', type: 'numeric' },
     { title: language.fleet_manager_fees_comment, field: 'fleet_manager_fees', type: 'numeric' },
     { title: language.insurance_roads_fees_comment, field: 'insurance_road_fees', type: 'numeric' },
+    // { title: "Insurance", field: 'insurance_fees', type: 'numeric' },
+    // { title: "Road tax", field: 'road_tax', type: 'numeric' },
+    // { title: "Color", field: 'color' },
+    // { title: "Licence", field: 'license' },
     { title: language.extra_info, field: 'extra_info' }
   ];
   const [data, setData] = useState([]);
@@ -37,12 +43,12 @@ export default function CarTypes() {
 
   useEffect(() => {
     if (cartypes.cars) {
+      console.log("cartypes.cars",cartypes.cars)
       setData(cartypes.cars);
     } else {
       setData([]);
     }
   }, [cartypes.cars]);
-
   return (
     cartypes.loading ? <CircularLoading /> :
       <MaterialTable
@@ -72,6 +78,7 @@ export default function CarTypes() {
               if (features.AllowCriticalEditsAdmin) {
                 setTimeout(() => {
                   resolve();
+                  // newData.insurance_road_fees = newData.insurance_fees + newData.road_tax;
                   const tblData = data;
                   tblData[tblData.indexOf(oldData)] = newData;
                   dispatch(editCarType(tblData), "Update");

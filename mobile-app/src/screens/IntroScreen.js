@@ -134,7 +134,10 @@ export default function IntroScreen(props) {
         pageActive.current = false;
         props.navigation.navigate("Reg");
     }
-
+    const goContact = async () => {
+        pageActive.current = false;
+        props.navigation.navigate("Support");
+    } 
 
     const openTerms = async () => {
         Linking.openURL(settings.CompanyTerms).catch(err => console.error("Couldn't load page", err));
@@ -188,6 +191,13 @@ export default function IntroScreen(props) {
                         ></Image>
                     </TouchableOpacity>
                 : null}
+                <TouchableOpacity style={styles.socialIcon} onPress={goContact}>
+                    <Image
+                        source={require("../../assets/images/image_support.png")}
+                        resizeMode="contain"
+                        style={styles.socialIconImage}
+                    ></Image>
+                </TouchableOpacity>
             </View>
             :null}
             <View>

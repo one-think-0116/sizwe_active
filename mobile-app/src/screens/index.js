@@ -10,6 +10,7 @@ import RideDetails from './RideDetails';
 import SearchScreen from './SearchScreen';
 import EditProfilePage from './EditProfile';
 import AboutPage from './About';
+import ContactPage from './Contact';
 import OnlineChat from './OnlineChat';
 import WalletDetails from './WalletDetails';
 import AddMoneyScreen from './AddMoney';
@@ -32,6 +33,7 @@ export {
     SearchScreen,
     EditProfilePage,
     AboutPage,
+    ContactPage,
     OnlineChat,
     PaymentDetails,
     WalletDetails,

@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState, useEffect} from 'react';
 import {
   Typography,
   ListItemIcon,
@@ -19,24 +19,59 @@ import MoneyIcon from '@material-ui/icons/AttachMoney';
 import NotifyIcon from '@material-ui/icons/NotificationsActive';
 import LocalAtmIcon from '@material-ui/icons/LocalAtm';
 import PersonOutlineIcon from '@material-ui/icons/PersonOutline';
+import ContactSupportIcon from '@material-ui/icons/ContactSupport';
+import Badge from '@material-ui/core/Badge';
+import MailIcon from '@material-ui/icons/Mail';
+import HourglassEmptyIcon from '@material-ui/icons/HourglassEmpty';
 import { 
   language,
   features
 } from 'config';
 import assets from 'assets';
 import { FirebaseContext } from 'common';
-
+const defaultProps = {
+  color: 'secondary',
+  children: <HourglassEmptyIcon />,
+};
 function AppMenu() {
   const { api } = useContext(FirebaseContext);
   const {
     signOut
   } = api;
   const auth = useSelector(state => state.auth);
+  const contacts = useSelector(state => state.manageContact);
+  const [pendingContactsCnt, setPendingContactsCnt] = useState(0);
+  const usersdata = useSelector(state => state.usersdataExcept);
+  const [pendingDriversCnt, setPendingDriversCnt] = useState(0);
   const dispatch = useDispatch();
   const LogOut = () => {
     dispatch(signOut());
   };
-
+  useEffect(() => {
+    if (contacts.contacts) {
+      let contactData = contacts.contacts;
+      let cnt = 0;
+        Object.keys(contactData).map(
+            (i) => {
+                if(!contactData[i].read) cnt++;
+            }
+        )
+        setPendingContactsCnt(cnt)
+    } else {
+      setPendingContactsCnt(0)
+    }
+  }, [contacts.contacts]);
+  useEffect(() => {
+    if (usersdata.users) {
+      let cnt = 0;
+      usersdata.users.map(item => {
+        if(item.usertype == "driver" && !item.approved) cnt++;
+      })
+        setPendingDriversCnt(cnt)
+    } else {
+      setPendingDriversCnt(0)
+    }
+  }, [usersdata.users]);
   let isAdmin = auth.info && auth.info.profile && auth.info.profile.usertype === 'admin';
   let isFleetAdmin = auth.info && auth.info.profile && auth.info.profile.usertype === 'fleetadmin';
   return (
@@ -90,6 +125,7 @@ function AppMenu() {
             <PeopleIcon />
           </ListItemIcon>
           <Typography variant="inherit">{language.drivers}</Typography>
+          {pendingDriversCnt == 0? null:<Badge badgeContent={pendingDriversCnt} {...defaultProps} style={{height:17,marginLeft:49}} />}
         </MenuItem>
         :null}
         {isAdmin?
@@ -162,6 +198,15 @@ function AppMenu() {
             <NotifyIcon />
           </ListItemIcon>
           <Typography variant="inherit">{language.push_notification_title}</Typography>
+        </MenuItem>
+        :null}
+        {isAdmin?
+        <MenuItem component={Link} to="/contacts">
+          <ListItemIcon>
+            <ContactSupportIcon />
+          </ListItemIcon>
+          <Typography variant="inherit">{"Contacts"}</Typography>
+          {pendingContactsCnt == 0? null: <Badge badgeContent={pendingContactsCnt} {...defaultProps} style={{height:8,marginLeft:35}} />}
         </MenuItem>
         :null}
         {isAdmin?

@@ -7,7 +7,6 @@ import {
 import { language } from 'config';
 
 export const fetchCarTypes = () => (dispatch) => (firebase) => {
-
   const {
     carTypesRef
   } = firebase;

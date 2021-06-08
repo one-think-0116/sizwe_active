@@ -43,6 +43,7 @@ export default function SideMenu(props){
         {name: language.profile_setting_menu, navigationName: 'Profile', icon: 'ios-person-add', type: 'ionicon'},
         {name: language.refer_earn, navigationName: 'Refer', icon: 'cash', type: 'ionicon'},
         {name: language.emergency, navigationName: 'Emergency', icon: 'ios-sad', type: 'ionicon'},
+        {name: "Contact Us", navigationName: 'Contact', icon: 'contact_support', type: 'ionicon'},
         {name: language.about_us_menu, navigationName: 'About', icon: 'info', type: 'entypo'},
         {name: language.logout, icon: 'sign-out',navigationName: 'Logout', type: 'font-awesome'}
     ];

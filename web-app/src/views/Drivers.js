@@ -31,7 +31,6 @@ export default function Users() {
       setData([]);
     }
   },[usersdata.users,auth.info.profile.usertype,auth.info.uid]);
-console.log("usersdata",usersdata)
   useEffect(()=>{
     if(cartypes.cars){
         let obj =  {};
@@ -72,6 +71,7 @@ console.log("usersdata",usersdata)
       options={{
         exportButton: true,
         sorting: true,
+        pageSizeOptions: [5,10,20,100,500]
       }}
       editable={{
         isEditable: newData => auth.info.profile.usertype === "admin",

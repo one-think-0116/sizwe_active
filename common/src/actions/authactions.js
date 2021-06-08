@@ -206,7 +206,6 @@ export const checkUserExists = async (regData) => {
 export const emailSignUp = (regData) => async (firebase) => {
 
   let url = `${cloud_function_server_url}/user_signup`;
-  console.log("url",url)
   const {
     singleUserRef,
     profileImageRef,

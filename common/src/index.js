@@ -118,7 +118,14 @@ import {
     GetDistance,
     GetTripDistance
 } from './other/GeoFunctions';
-
+import {
+    sendContact,
+} from './actions/contactactions';
+import {
+    fetchContacts,
+    updateContact,
+    deleteContact
+} from './actions/manageContactactions';
 const FirebaseContext = createContext(null);
 
 const FirebaseProvider  = ({ children }) => {
@@ -152,6 +159,8 @@ const FirebaseProvider  = ({ children }) => {
             settingsRef:app.database().ref("settings"),
             carTypesRef:app.database().ref("rates/car_type"),          
             promoRef:app.database().ref("offers"),
+            contactRef: app.database().ref("contacts"),
+            singleContactRef:(uid) => app.database().ref("contacts/"+uid),
             promoEditRef:(id) => app.database().ref("offers/"+ id),
             notifyRef:app.database().ref("notifications/"),
             notifyEditRef:(id) => app.database().ref("notifications/"+ id),
@@ -257,7 +266,12 @@ const FirebaseProvider  = ({ children }) => {
                 sendMessage: (data) => (dispatch) => sendMessage(data)(dispatch)(firebase), 
                 stopFetchMessages: (bookingId) => (dispatch) => stopFetchMessages(bookingId)(dispatch)(firebase), 
                 fetchWithdraws: () => (dispatch) => fetchWithdraws()(dispatch)(firebase), 
-                completeWithdraw: (entry) => (dispatch) => completeWithdraw(entry)(dispatch)(firebase)
+                completeWithdraw: (entry) => (dispatch) => completeWithdraw(entry)(dispatch)(firebase),
+                sendContact: (data) => (dispatch) => sendContact(data)(dispatch)(firebase),
+                fetchContacts: () => (dispatch) => fetchContacts()(dispatch)(firebase), 
+                updateContact: (uid, data) => (dispatch) => updateContact(uid, data)(dispatch)(firebase), 
+                deleteContact: (data) => (dispatch) => deleteContact(data)(dispatch)(firebase), 
+
             }
         }
     }

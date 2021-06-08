@@ -49,6 +49,10 @@
                 "fleetadmin"
             ]
         },
+        "contacts": {
+            ".read":true,
+            ".write":true
+        },
         "withdraws": {
             ".read": "auth != null",
             ".write": "root.child('users').child(auth.uid).child('usertype').val() === 'admin'",

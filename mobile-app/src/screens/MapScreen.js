@@ -133,9 +133,7 @@ export default function MapScreen(props) {
     },[])
 
     useEffect(() => {  
-        
         if(gps.location){
-            
             setRegion({
                 latitude: gps.location.lat,
                 longitude: gps.location.lng,

@@ -13,6 +13,7 @@ import {
     SearchScreen,
     EditProfilePage,
     AboutPage,
+    ContactPage,
     OnlineChat,
     WalletDetails,
     AddMoneyScreen,
@@ -59,6 +60,12 @@ export const AppStack = {
     },
     About: {
         screen: AboutPage,
+        navigationOptions: {
+            headerShown: false
+        }
+    },
+    Contact: {
+        screen: ContactPage,
         navigationOptions: {
             headerShown: false
         }
@@ -157,6 +164,12 @@ export const AuthStack = createStackNavigator({
     },
     Login: {
         screen: LoginScreen,
+        navigationOptions: {
+            headerShown: false,
+        }
+    },
+    Support: {
+        screen: ContactPage,
         navigationOptions: {
             headerShown: false,
         }

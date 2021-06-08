@@ -20,16 +20,17 @@ function AuthLoading(props) {
         fetchEarningsReport,
         signOut,
         fetchWithdraws,
+        fetchContacts
     } = api;
     const dispatch = useDispatch();
     const auth = useSelector(state => state.auth);
-
     useEffect(()=>{
         dispatch(fetchUser());
         dispatch(fetchUsersExcept());
         dispatch(fetchCarTypes());
         dispatch(fetchSettings());
-    },[dispatch,fetchUser,fetchUsersExcept,fetchCarTypes,fetchSettings]);
+        // dispatch(fetchContacts());
+    },[dispatch,fetchUser,fetchContacts,fetchUsersExcept,fetchCarTypes,fetchSettings]);
 
     useEffect(()=>{
         if(auth.info){
@@ -52,6 +53,7 @@ function AuthLoading(props) {
                     dispatch(fetchEarningsReport());
                     dispatch(fetchCancelReasons());
                     dispatch(fetchWithdraws());
+                    dispatch(fetchContacts());
                 }
                 else if(role === 'fleetadmin'){
                     dispatch(fetchUsers());
@@ -68,7 +70,7 @@ function AuthLoading(props) {
                 dispatch(signOut());
             }
         }
-    },[auth.info,dispatch,fetchBookings,fetchCancelReasons,fetchDriverEarnings,fetchEarningsReport,fetchNotifications,fetchPromos,fetchUsers,fetchUsersExcept,fetchWithdraws,signOut]);
+    },[auth.info,dispatch,fetchContacts,fetchBookings,fetchCancelReasons,fetchDriverEarnings,fetchEarningsReport,fetchNotifications,fetchPromos,fetchUsers,fetchUsersExcept,fetchWithdraws,signOut]);
 
     return (
         auth.loading? <CircularLoading/>:props.children

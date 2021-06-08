@@ -27,6 +27,7 @@ import Withdraws from './views/Withdraws';
 import CancellationReasons from './views/CancellationReasons';
 import RegisterPage from './views/RegisterPage';
 import AddMoney from "./views/AddMoney";
+import Contacts from "./views/Contacts";
 
 import {
   store,
@@ -61,6 +62,7 @@ function App() {
               <ProtectedRoute exact component={AddMoney} path="/addtowallet" permit={"admin"} />
               <ProtectedRoute exact component={Withdraws} path="/withdraws" permit={"admin"} />
               <ProtectedRoute exact component={Settings} path="/settings" permit={"admin"} />
+              <ProtectedRoute exact component={Contacts} path="/contacts" permit={"admin"} />
               <Route path="/about-us" component={AboutUs} />
               <Route path="/privacy-policy" component={PrivacyPolicy} />
               {features.WebsitePagesEnabled ?

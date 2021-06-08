@@ -22,6 +22,8 @@ import { locationreducer as locationdata } from '../reducers/locationreducer';
 import { chatreducer as chatdata } from '../reducers/chatreducer';
 import { withdrawreducer as withdrawdata } from '../reducers/withdrawreducer';
 import { gpsreducer as gpsdata } from '../reducers/gpsreducer';
+import { contactreducer as contact } from '../reducers/contactreducer';
+import { manageContactreducer as manageContact } from '../reducers/manageContactreducer';
 
 const reducers = combineReducers({
   auth,
@@ -43,7 +45,9 @@ const reducers = combineReducers({
   locationdata,
   chatdata,
   withdrawdata,
-  gpsdata
+  gpsdata,
+  contact,
+  manageContact
 });
 
 let middleware = [thunk];

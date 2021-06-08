@@ -88,7 +88,8 @@ const BookingHistory = () => {
       columns={columns}
       data={data}
       options={{
-        actionsColumnIndex: -1
+        actionsColumnIndex: -1,
+        pageSizeOptions: [5,10,20,100,500]
       }}
       actions={[
         rowData => ({
