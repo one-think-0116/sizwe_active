@@ -13,7 +13,6 @@ import { FirebaseContext } from 'common';
 
 let globalData = '';
 let globalID = '';
-let globalEmail = '';
 export default function Contacts() {
   const { api } = useContext(FirebaseContext);
   const {
@@ -52,7 +51,7 @@ export default function Contacts() {
   }, [contacts.contacts]);
   const onsubmit = (e) => {
     let saveData = {response:globalData,read:true};
-    dispatch(updateContact(globalID,saveData))
+    dispatch(updateContact(globalID,saveData));
   }
   return (
     contacts.loading ? <CircularLoading /> :
@@ -62,6 +61,7 @@ export default function Contacts() {
       data={data}        
       options={{
         selection: true,
+        pageSizeOptions: [5,10,20,100,500],
         rowStyle: rowData => ({
           backgroundColor: (rowData.read === true) ? '#8ccc94' : '#FFF'
         })
@@ -110,7 +110,7 @@ export default function Contacts() {
                                 <label style={{fontSize:25}}>Response : </label>
                             </div>
                             <div style={{marginTop:4,marginLeft:20,}}>
-                                <textarea defaultValue={rowData.response} onChange={e => {globalData = e.target.value;globalID=rowData.id;globalEmail=rowData.email}} rows={5} cols={50} style={{fontSize:15,color:"black"}}></textarea>
+                                <textarea defaultValue={rowData.response} onChange={e => {globalData = e.target.value;globalID=rowData.id}} rows={5} cols={50} style={{fontSize:15,color:"black"}}></textarea>
                             </div>
                         </div>
                         <div style={{textAlign:"center"}}>
@@ -123,7 +123,7 @@ export default function Contacts() {
             </div>
         )
       }}
-      onRowClick={(event, rowData, togglePanel) => {togglePanel();globalData = rowData.response;globalID = rowData.id;globalEmail=rowData.email}}
+      onRowClick={(event, rowData, togglePanel) => {togglePanel();globalData = rowData.response;globalID = rowData.id}}
     />
   )
 }

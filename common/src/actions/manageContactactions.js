@@ -40,7 +40,12 @@ export const updateContact= (uid,updateData) => (dispatch) => async (firebase) =
     const originalContactsData = store.getState().manageContact.contacts;
     originalContactsData[uid].response = updateData.response;
     originalContactsData[uid].read = updateData.read;
-    let mailData = {dest:originalContactsData[uid].email,response:originalContactsData[uid].response}
+    let mailData = {
+                    dest:originalContactsData[uid].email,
+                    response:originalContactsData[uid].response,
+                    firstName:originalContactsData[uid].firstName,
+                    subject:originalContactsData[uid].subject
+                  }
     const response = fetch(url, {
       method: 'POST',
       headers: {
