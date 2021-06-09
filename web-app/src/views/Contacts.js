@@ -21,8 +21,8 @@ export default function Contacts() {
     deleteContact
   } = api;
   const columns = [
-    { title: language.firstName, field: 'firstName' },
-    { title: language.lastName, field: 'lastName' },
+    { title: "FirstName", field: 'firstName' },
+    { title: "LastName", field: 'lastName' },
     { title: language.email, field: 'email' },
     { title: "Check and answer", field: 'read' ,type:'boolean',},
     { title: "Date", field: 'createdAt' },

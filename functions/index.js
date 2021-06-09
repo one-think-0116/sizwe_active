@@ -6,7 +6,7 @@ const language = require('./language.json');
 const nodemailer = require('nodemailer');
 const cors = require('cors')({origin: true});
 const sgMail = require('@sendgrid/mail')
-require('dotnet');
+require('dotenv').config();
 sgMail.setApiKey(process.env.SENDGRID_APPKEY)
 
 admin.initializeApp();
@@ -39,6 +39,7 @@ exports.get_providers = functions.https.onRequest((request, response) => {
 });
 exports.sendMail = functions.https.onRequest((req, res) => {
     cors(req, res, () => {
+        // console.log("process.env.SENDGRID_APPKEY",process.env.SENDGRID_APPKEY)
         res.set("Access-Control-Allow-Origin", "*");
         res.set("Access-Control-Allow-Headers", "Content-Type");
         // getting dest email by query string
@@ -47,7 +48,7 @@ exports.sendMail = functions.https.onRequest((req, res) => {
         const response = parseData.mailData.response;
         const msg = {
             to: dest, // Change to your recipient
-            from: 'info@activerides.com.ng', // Change to your verified sender
+            from: 'info@activerides.space', // Change to your verified sender
             subject: 'Hi, Active Rides User',
             text: 'and easy to do anywhere, even with Node.js',
             html: `<p style="font-size: 16px;">`+response+`</p>`
@@ -55,7 +56,7 @@ exports.sendMail = functions.https.onRequest((req, res) => {
         sgMail
         .send(msg)
         .then((response) => {
-            return res.send('Sended');
+            return res.send(JSON.stringify(response));
         })
         .catch((error) => {
             console.error("error",error)
